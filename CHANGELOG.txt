@@ -1,3 +1,117 @@
+PHPCrawl Version-History / Changelog
+
+Version 0.83
+2015/01/27
+
+* Fixed bug #74: The crawler now doesn't treat hostnames case sensitive anymore and won't follow URLs differing
+just in hostname letter case more than one time (like "www.foo.net/page" and "www.FOO.net/page")
+        
+* Fixed bug #38: Detection for socket-EOF sometimes failed on SSL-connections under windows-OS causing a (infinite)
+hang of the crawling-process.
+        
+* Fixed bug #59: If obeyRobotsTxt() is set to TRUE, the crawler now doesn't throw any errors anymore when parsing any
+malformed robots.txt-files.
+        
+* Fixed bug #36: The crawler now uses the correct user-agent identification for requests of robots.txt-documents when it
+was changed by the user with setUserAgentString().
+            
+* A second, optional parameter "robots_txt_uri" is now available for obeyRobotsTxt().
+This let's the user alternatively specify the location of the robots.txt-file to obey manually as a URI (URL or file).
+            
+* Fixed bug #71: When running phpcrawl from the test-interface-GUI and output "Content-Size" was chosen, a
+"PHP Fatal error: Call to undefined method PHPCrawlerUtils::getHeaderTag()" was thrown.
+
+* Fixed bug/issue #61: Renamed method setPageLimit() to setRequestLimit() (because that is what this method does,
+it limits the number of requests). The method setPageLimit() still is present for compatibility reasons though, but
+was marked as deprecated.
+Also, all requests resulting in a server answer other than "2xx" are marked as "document not received" now 
+(PHPCrawlerDocumentInfo::received property). This makes the option setRequestLimit() with the optional
+"only_count_received_documents"-parameter set to behave as expected.
+
+* Feature Request #11: Added ability to set a limit to the crawling-depth, method setCrawlingDepthLimit() added.
+Property PHPCrawlerDocumentInfo::url_link_depth added.
+
+* Fixed bug #79: When using phpcrawl in multiprocess mode MPMODE_PARENT_EXECUTES_USERCODE, the array
+PHPCrawlerDocumentInfo::links_found_url_descriptors sometimes was missing some found URLs (and contained a lot
+of NULL entries).
+
+* Fixed undocumented bug: Links with a unknown protocol containing a minus (like "android-app://...") get rebuild
+correctly now and won't be followed anymore.
+
+* Fixed bug #76: Links containig numerical-reference-entities or hexadecimal-reference-entities (like &#x2f;) get
+rebuild and followed correctly now.
+
+* Fixed bug #25: Added an option/method "excludeLinkSearchDocumentSections()" to specify what HTML-document-sections
+should get ignored by the internal link-finding algorithm.
+This gives users the opportunity to prevent the crawler from finding links in HTML-comments and <script>-areas of
+HTML-pages (as reported/asked in the bugreport).
+
+
+Version 0.82
+2014/01/16
+
+* Feature Request #6: Added the possibility to delay HTTP-requests the crawler executes, method setRequestDelay() added.
+
+* Fixed bug #39: Process resumption failed on Windows machines due to an unnecessary sem_get() call which is no present
+on windows-machines ("Call to undefined function sem_get()").
+
+* Fixed bug #58: If using the sqlite-URL-cache (setUrlCacheType(PHPCrawlerUrlCacheTypes::URLCACHE_SQLITE) on
+Windows, the cleanup-method failed after the crawling-process was finished and threw an "unlink() permission denied"
+error on two db3-files.
+
+* Feature Request #9: Added support for gzip-encoded content, method requestGzipContent() added. By default
+the crawler is not requesting gzip-encoded content for compatibility reasons.
+
+* Fixex bug #57: Internal detection for the systems temp-directory sometimes failed/threw an error.
+
+* Added new summarizing benchmarks for a crawling-porocess, added PHPCrawlerProcessReport properties 
+"avg_proc_data_transfer_rate", "avg_server_connect_time" and "avg_server_response_time"
+
+* Added new benchmarks for single page-requests, added properties PHPCrawlerDocumentInfo::server_connect_time
+and PHPCrawlerDocumentInfo::server_response_time
+
+* Adjusted/corrected some page benchmark results to give some "more correct" results
+(PHPCrawlerDocumentInfo::data_transfer_rate and PHPCrawlerDocumentInfo::data_transfer_time)
+
+* Fixed bug #56: Requests for SSL/https-sites sometimes didn't return (hung up) due to failed detection of socket-EOF
+
+* Fixed bug #54: The crawler didn't recognize newlines in server-responses correctly in some rare cases and returned
+an "Host doesn't respond with a HTTP-header"-error.
+
+* Overridable and deprecated method handlePageData() removed because it used a lot of memory. For compatibility reasons
+this function will sill be called if defined by the user though (data gets internally prepared for it only in this case).
+
+* Adjusted some internal timing and buffer settings for some better performance in multiprocessing-mode
+
+* Implemented HTTP 1.1 protocol including chunked transfer encoding (because some servers don't support other
+than http 1.1 and chunked encoding anymore). HTTP 1.1 is now the default protocol. Method setHTTPProtocolVersion()
+added for optionally switch back to HTTP 1.0.
+
+* Fixed bug #49: Some servers didn't accept request-headers from phpcrawl because of HTTP 1.0 protocol and uppercase
+"HOST"-word in request-headers. Changed to HTTP 1.1 and "HOST" to "Host"
+
+* Fixed undocumented bug: If there are no cookies to send, an empty header-line in request-headers was send to the
+server (didn't seem to cause any problems though)
+
+* Fixed undocumented bug: If a cookie had the domain-attribute ".domainname.com" (with a leading dot), the cookie
+was NOT send with any requests for the host "doimanname.com" (withoud leading www. or similar subdomains)
+
+* Unnecessary slashes get removed now generally at the end of URLs if the URL has no path ("www.site.com/" -> "www.site.com")
+
+* Fixed bug #33: Missing "Accept"-directive in request-headers caused problems with some websites/webservers
+(no response/no delivered content)
+
+* Increased the default stream- and connection-timeout settings (a lot of people reported of "slow" websites that
+don't respond within the given timeouts)
+
+* Fixed bug #29: Fixed a memory-leak caused by the stream_client_connect()-function (together with stream_context_create())
+that suffers from a memory leak in PHP version 5.3.X and maybe other versions (see https://bugs.php.net/bug.php?id=61371).
+
+* Applied some other minor memory tweaks (for some reduced memory usage)
+
+* Fixed "bug" #37: Fixed/removed some "code style errors" detected by PhpStorms copdeinspector
+
+
 Version 0.81
 2012/10/14
 

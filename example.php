@@ -38,7 +38,7 @@ class MyCrawler extends PHPCrawler
 
 // Now, create a instance of your class, define the behaviour
 // of the crawler (see class-reference for more options and details)
-// and start the crawling-process. 
+// and start the crawling-process.
 
 $crawler = new MyCrawler();
 
