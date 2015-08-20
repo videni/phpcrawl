@@ -8,6 +8,9 @@
             "email": "phpcrawl@cuab.de"
         }
     ],
+    "autoload": {
+        "files": ["libs/PHPCrawler.class.php"]
+    },
     "require": {
 
     }
